@@ -1,37 +1,31 @@
-# Function to compute mortgage payments across different schedules
 def mortgage_payments(principal, rate, amortization):
-    rate = rate / 100
-    monthly_interest = ((1 + rate / 2) ** (2 / 12) - 1)
-    semi_monthly_interest = ((1 + rate / 2) ** (2 / 24) - 1)
-    bi_weekly_interest = ((1 + rate / 2) ** (2 / 26) - 1)
-    weekly_interest = ((1 + rate / 2) ** (2 / 52) - 1)
-    monthly_pmt = (((monthly_interest) * ((1 + monthly_interest) * (amortization * 12))) / (((1 + monthly_interest) * (amortization * 12)) - 1)) * principal 
-    semi_monthly_pmt = (((semi_monthly_interest) * ((1 + semi_monthly_interest) * (amortization * 24))) / (((1 + semi_monthly_interest) * (amortization * 24)) - 1)) * principal 
-    bi_weekly_pmt = (((bi_weekly_interest) * ((1 + bi_weekly_interest) * (amortization * 26))) / (((1 + bi_weekly_interest) * (amortization * 26)) - 1)) * principal 
-    weekly_pmt = (((weekly_interest) * ((1 + weekly_interest) * (amortization * 52))) / (((1 + weekly_interest) * (amortization * 52)) - 1)) * principal 
-    accelerated_bi_weekly_pmt = monthly_pmt / 2
-    accelerated_weekly_pmt = monthly_pmt / 4
-    
-    return (
-        round(monthly_pmt, 2), 
-        round(semi_monthly_pmt, 2), 
-        round(bi_weekly_pmt, 2), 
-        round(weekly_pmt, 2), 
-        round(accelerated_bi_weekly_pmt, 2), 
-        round(accelerated_weekly_pmt, 2))
 
-# Take user inputs and compute mortgage payments
-principal_amount = float(input("Enter the loan amount: "))
-interest_rate_input = float(input("Enter the annual interest rate: "))
-loan_term = float(input("Enter the loan duration in years: "))
+    r = rate / 100.0
 
-# Compute payments
-monthly, semi_monthly, bi_weekly, weekly, accelerated_bi_weekly, accelerated_weekly = mortgage_payments(principal_amount, interest_rate_input, loan_term)
+    def calc_payment(frequency):
+        i = (1 + r / 2) ** (2 / frequency) - 1
+        n = amortization * frequency
+        payment = principal * (i * (1 + i) ** n) / ((1 + i) ** n - 1)
+        return payment
 
-# Display the calculated payment amounts
-print(f"Monthly Payment: {monthly}")
-print(f"Semi-Monthly Payment: {semi_monthly}")
-print(f"Bi-Weekly Payment: {bi_weekly}")
-print(f"Weekly Payment: {weekly}")
-print(f"Rapid Bi-Weekly Payment: {accelerated_bi_weekly}")
-print(f"Rapid Weekly Payment: {accelerated_weekly}")
+    monthly = calc_payment(12)
+    semi_monthly = calc_payment(24)
+    bi_weekly = calc_payment(26)
+    weekly = calc_payment(52)
+    rapid_bi_weekly = monthly / 2
+    rapid_weekly = monthly / 4
+
+    return (monthly, semi_monthly, bi_weekly, weekly, rapid_bi_weekly, rapid_weekly)
+
+principal = float(input("Enter the principal amount: "))
+rate = float(input("Enter the quoted interest rate (as a percent): "))
+amortization = float(input("Enter the amortization period in years: "))
+
+(monthly, semi_monthly, bi_weekly, weekly, rapid_bi_weekly, rapid_weekly) = mortgage_payments(principal, rate, amortization)
+
+print(f"Monthly Payment: ${monthly:.2f}")
+print(f"Semi-monthly Payment: ${semi_monthly:.2f}")
+print(f"Bi-weekly Payment: ${bi_weekly:.2f}")
+print(f"Weekly Payment: ${weekly:.2f}")
+print(f"Rapid Bi-weekly Payment: ${rapid_bi_weekly:.2f}")
+print(f"Rapid Weekly Payment: ${rapid_weekly:.2f}")
